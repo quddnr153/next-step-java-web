@@ -10,7 +10,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author Byungwook, Lee
  *
  */
-abstract public class StringCalculator {
+public abstract class StringCalculator {
+	private static final String DEFAULT_VALUE = "0";
 	private String value = "";
 	private String separatorChars = ",:";
 
@@ -29,13 +30,13 @@ abstract public class StringCalculator {
 		return operator(separateStringToInt());
 	}
 
-	protected List<Integer> separateStringToInt() throws RuntimeException {
+	List<Integer> separateStringToInt() throws RuntimeException {
+		if (StringUtils.isEmpty(value)) {
+			value = DEFAULT_VALUE;
+		}
+
 		List<Integer> intValues = new ArrayList<Integer>();
 		List<String> stringValues = Arrays.asList(StringUtils.split(value, separatorChars));
-
-		if (stringValues.isEmpty()) {
-			intValues.add(0);
-		}
 
 		for (String stringValue : stringValues) {
 			Integer intValue = Integer.parseInt(stringValue);
@@ -55,5 +56,5 @@ abstract public class StringCalculator {
 	 * @param intValues
 	 * @return
 	 */
-	abstract protected int operator(final List<Integer> intValues);
+	abstract int operator(final List<Integer> intValues);
 }

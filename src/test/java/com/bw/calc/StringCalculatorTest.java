@@ -15,7 +15,7 @@ import org.junit.Test;
 public class StringCalculatorTest {
 
 	@Test
-	public void testSeparateStringToInt_빈값() {
+	public void testSeparateStringToInt_EmptyValue() {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();
 		expected.add(0);
@@ -33,7 +33,25 @@ public class StringCalculatorTest {
 	}
 
 	@Test
-	public void testSeparateStringToInt_기본구분자() {
+	public void testSeparateStringToInt_NullValue() {
+		// Given
+		List<Integer> expected = new ArrayList<Integer>();
+		expected.add(0);
+
+		// When
+		List<Integer> actual = (new StringCalculator(null) {
+			@Override
+			protected int operator(List<Integer> intValues) {
+				return 0;
+			}
+		}).separateStringToInt();
+
+		// Then
+		assertEquals("value 가 빈 값일 때는 0을 return 한다.", expected, actual);
+	}
+
+	@Test
+	public void testSeparateStringToInt_Basic_Separators() {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();
 		expected.add(1);
@@ -54,7 +72,7 @@ public class StringCalculatorTest {
 	}
 
 	@Test
-	public void testSeparateStringToInt_추가구분자() {
+	public void testSeparateStringToInt_Additional_Separators() {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();
 		expected.add(1);
@@ -76,7 +94,7 @@ public class StringCalculatorTest {
 	}
 
 	@Test(expected = RuntimeException.class)
-	public void testSeparateStringToInt_음수_예외처리() {
+	public void testSeparateStringToInt_NegativeValue_ExceptionHandling() {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();
 		expected.add(1);
@@ -98,7 +116,7 @@ public class StringCalculatorTest {
 	}
 
 	@Test
-	public void testSeparateStringToInt_음수_try_catch() {
+	public void testSeparateStringToInt_NegativeValue_Try_Catch() {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();
 		expected.add(1);
@@ -109,7 +127,7 @@ public class StringCalculatorTest {
 
 		// When
 		try {
-			List<Integer> actual = (new StringCalculator(value, addSeparatorChars) {
+			(new StringCalculator(value, addSeparatorChars) {
 				@Override
 				protected int operator(List<Integer> intValues) {
 					return 0;
