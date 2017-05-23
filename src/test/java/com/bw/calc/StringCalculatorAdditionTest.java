@@ -14,6 +14,21 @@ import org.junit.Test;
 public class StringCalculatorAdditionTest {
 
 	@Test
+	public void testCalculate_Basic_Guidance() {
+		// Given
+		int expected = 6;
+		String value = "//;\n1;2;3";
+		String customSeparators = "//\n;";
+		StringCalculator calc = new StringCalculatorAddition(value, customSeparators);
+
+		// When
+		int actual = calc.calculate();
+
+		// Then
+		assertEquals("1 + 2 + 3 = 6 이다.", expected, actual);
+	}
+
+	@Test
 	public void testOperator() {
 		// Given
 		int expected = 10;

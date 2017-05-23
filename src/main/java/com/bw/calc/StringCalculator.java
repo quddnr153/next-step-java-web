@@ -47,7 +47,7 @@ abstract public class StringCalculator {
 	}
 
 	/**
-	 * 덧셈, 곱셈, 나눗셈 등 구현하고자하는 연산자로 구현하시오.
+	 * 덧셈, 곱셈, 나눗셈, 평균, 최대/최소 값 등 구현하고자하는 연산자로 구현하시오.
 	 * @param intValues
 	 * @return
 	 */

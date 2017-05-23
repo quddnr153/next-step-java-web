@@ -8,8 +8,18 @@ import java.util.List;
  */
 public class StringCalculatorAddition extends StringCalculator {
 
+	public StringCalculatorAddition() {}
+
+	public StringCalculatorAddition(final String value) {
+		super(value);
+	}
+
+	public StringCalculatorAddition(final String value, final String separatorChars) {
+		super(value, separatorChars);
+	}
+
 	@Override
-	protected int operator(List<Integer> intValues) {
+	protected int operator(final List<Integer> intValues) {
 		return intValues.stream().mapToInt(Integer::intValue).sum();
 	}
 
