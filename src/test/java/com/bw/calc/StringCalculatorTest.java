@@ -15,6 +15,24 @@ import org.junit.Test;
 public class StringCalculatorTest {
 
 	@Test
+	public void testSeparateStringToInt_빈값() {
+		// Given
+		List<Integer> expected = new ArrayList<Integer>();
+		expected.add(0);
+
+		// When
+		List<Integer> actual = (new StringCalculator() {
+			@Override
+			protected int operator(List<Integer> intValues) {
+				return 0;
+			}
+		}).separateStringToInt();
+
+		// Then
+		assertEquals("value 가 빈 값일 때는 0을 return 한다.", expected, actual);
+	}
+
+	@Test
 	public void testSeparateStringToInt_기본구분자() {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();

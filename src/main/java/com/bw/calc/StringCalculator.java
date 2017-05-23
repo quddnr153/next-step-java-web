@@ -33,6 +33,10 @@ abstract public class StringCalculator {
 		List<Integer> intValues = new ArrayList<Integer>();
 		List<String> stringValues = Arrays.asList(StringUtils.split(value, separatorChars));
 
+		if (stringValues.isEmpty()) {
+			intValues.add(0);
+		}
+
 		for (String stringValue : stringValues) {
 			Integer intValue = Integer.parseInt(stringValue);
 
