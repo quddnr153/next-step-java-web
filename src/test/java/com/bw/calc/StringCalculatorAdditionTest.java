@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -12,6 +13,12 @@ import org.junit.Test;
  *
  */
 public class StringCalculatorAdditionTest {
+	private StringCalculator calc;
+
+	@Before
+	public void setUp() {
+		calc = new StringCalculatorAddition();
+	}
 
 	@Test
 	public void testCalculate_Basic_Guidance() {
@@ -19,7 +26,8 @@ public class StringCalculatorAdditionTest {
 		int expected = 6;
 		String value = "//;\n1;2;3";
 		String customSeparators = "//\n;";
-		StringCalculator calc = new StringCalculatorAddition(value, customSeparators);
+		calc.setValue(value);
+		calc.setSeparatorChars(customSeparators);
 
 		// When
 		int actual = calc.calculate();

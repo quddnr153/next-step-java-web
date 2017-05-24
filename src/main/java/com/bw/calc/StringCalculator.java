@@ -26,6 +26,22 @@ public abstract class StringCalculator {
 		this.separatorChars += separatorChars;
 	}
 
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String getSeparatorChars() {
+		return separatorChars;
+	}
+
+	public void setSeparatorChars(String separatorChars) {
+		this.separatorChars = separatorChars;
+	}
+
 	public int calculate() {
 		return operator(separateStringToInt());
 	}
