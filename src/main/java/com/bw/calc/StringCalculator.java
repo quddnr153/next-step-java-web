@@ -12,6 +12,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class StringCalculator {
 	private static final String DEFAULT_VALUE = "0";
+	private static final String CUSTOM_START_CHAR = "//";
+	private static final String CUSTOM_END_CHAR = "\n";
+	private static final int START_INDEX_AFTER_CUSTOM_END_CHAR = 1;
+
 	private String value = "";
 	private String separatorChars = ",:";
 
@@ -19,11 +23,6 @@ public abstract class StringCalculator {
 
 	public StringCalculator(final String value) {
 		this.value = value;
-	}
-
-	public StringCalculator(final String value, final String separatorChars) {
-		this.value = value;
-		this.separatorChars += separatorChars;
 	}
 
 	public String getValue() {
@@ -34,14 +33,6 @@ public abstract class StringCalculator {
 		this.value = value;
 	}
 
-	public String getSeparatorChars() {
-		return separatorChars;
-	}
-
-	public void setSeparatorChars(String separatorChars) {
-		this.separatorChars = separatorChars;
-	}
-
 	public int calculate() {
 		return operator(separateStringToInt());
 	}
@@ -49,6 +40,11 @@ public abstract class StringCalculator {
 	List<Integer> separateStringToInt() throws RuntimeException {
 		if (StringUtils.isEmpty(value)) {
 			value = DEFAULT_VALUE;
+		}
+
+		if (isExistCustomSeparator()) {
+			addCustomSeparator();
+			splitSubStringExceptCustomSeparator();
 		}
 
 		List<Integer> intValues = new ArrayList<Integer>();
@@ -65,6 +61,20 @@ public abstract class StringCalculator {
 		}
 
 		return intValues;
+	}
+
+	private boolean isExistCustomSeparator() {
+		return value.startsWith(CUSTOM_START_CHAR) && value.contains(CUSTOM_END_CHAR);
+	}
+
+	private void addCustomSeparator() {
+		for (int index = CUSTOM_START_CHAR.length(); index < value.indexOf(CUSTOM_END_CHAR); index++) {
+			separatorChars += value.charAt(index);
+		}
+	}
+
+	private void splitSubStringExceptCustomSeparator() {
+		value = value.substring(value.indexOf(CUSTOM_END_CHAR) + START_INDEX_AFTER_CUSTOM_END_CHAR);
 	}
 
 	/**

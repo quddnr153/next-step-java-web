@@ -78,11 +78,11 @@ public class StringCalculatorTest {
 		expected.add(1);
 		expected.add(2);
 		expected.add(3);
-		String value = "//1,2:\n3";
-		String addSeparatorChars = "//\n";
+		expected.add(4);
+		String value = "//;\n1,2:3;4";
 
 		// When
-		List<Integer> actual = (new StringCalculator(value, addSeparatorChars) {
+		List<Integer> actual = (new StringCalculator(value) {
 			@Override
 			protected int operator(List<Integer> intValues) {
 				return 0;
@@ -100,11 +100,11 @@ public class StringCalculatorTest {
 		expected.add(1);
 		expected.add(2);
 		expected.add(3);
-		String value = "//1,2:\n3;-4";
-		String addSeparatorChars = "//\n";
+		expected.add(-4);
+		String value = "//;\n1,2:3;-4";
 
 		// When
-		List<Integer> actual = (new StringCalculator(value, addSeparatorChars) {
+		List<Integer> actual = (new StringCalculator(value) {
 			@Override
 			protected int operator(List<Integer> intValues) {
 				return 0;
@@ -122,12 +122,11 @@ public class StringCalculatorTest {
 		expected.add(1);
 		expected.add(2);
 		expected.add(3);
-		String value = "//1,2:\n3;-4";
-		String addSeparatorChars = "//\n;";
+		String value = "//;\n1,2:3;-4";
 
 		// When
 		try {
-			(new StringCalculator(value, addSeparatorChars) {
+			(new StringCalculator(value) {
 				@Override
 				protected int operator(List<Integer> intValues) {
 					return 0;

@@ -14,10 +14,6 @@ public class StringCalculatorAddition extends StringCalculator {
 		super(value);
 	}
 
-	public StringCalculatorAddition(final String value, final String separatorChars) {
-		super(value, separatorChars);
-	}
-
 	@Override
 	protected int operator(final List<Integer> intValues) {
 		return intValues.stream().mapToInt(Integer::intValue).sum();

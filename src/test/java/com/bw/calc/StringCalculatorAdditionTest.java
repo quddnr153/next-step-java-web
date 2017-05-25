@@ -25,9 +25,7 @@ public class StringCalculatorAdditionTest {
 		// Given
 		int expected = 6;
 		String value = "//;\n1;2;3";
-		String customSeparators = "//\n;";
 		calc.setValue(value);
-		calc.setSeparatorChars(customSeparators);
 
 		// When
 		int actual = calc.calculate();
