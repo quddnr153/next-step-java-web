@@ -45,7 +45,7 @@ public class StringCalculatorAdditionTest {
 		intValues.add(4);
 
 		// When
-		int actual = (new StringCalculatorAddition().operator(intValues));
+		int actual = calc.operator(intValues);
 
 		// Then
 		assertEquals("1 + 2 + 3 + 4 = 10 이다.", expected, actual);

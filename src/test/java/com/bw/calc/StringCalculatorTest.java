@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -13,6 +14,17 @@ import org.junit.Test;
  *
  */
 public class StringCalculatorTest {
+	private StringCalculator calc;
+
+	@Before
+	public void setUp() {
+		calc = new StringCalculator() {
+			@Override
+			int operator(List<Integer> intValues) {
+				return 0;
+			}
+		};
+	}
 
 	@Test
 	public void testSeparateStringToInt_EmptyValue() {
@@ -21,12 +33,7 @@ public class StringCalculatorTest {
 		expected.add(0);
 
 		// When
-		List<Integer> actual = (new StringCalculator() {
-			@Override
-			protected int operator(List<Integer> intValues) {
-				return 0;
-			}
-		}).separateStringToInt();
+		List<Integer> actual = calc.separateStringToInt();
 
 		// Then
 		assertEquals("value 가 빈 값일 때는 0을 return 한다.", expected, actual);
@@ -37,14 +44,10 @@ public class StringCalculatorTest {
 		// Given
 		List<Integer> expected = new ArrayList<Integer>();
 		expected.add(0);
+		calc.setValue(null);
 
 		// When
-		List<Integer> actual = (new StringCalculator(null) {
-			@Override
-			protected int operator(List<Integer> intValues) {
-				return 0;
-			}
-		}).separateStringToInt();
+		List<Integer> actual = calc.separateStringToInt();
 
 		// Then
 		assertEquals("value 가 빈 값일 때는 0을 return 한다.", expected, actual);
@@ -58,14 +61,10 @@ public class StringCalculatorTest {
 		expected.add(2);
 		expected.add(3);
 		String value = "1,2:3";
+		calc.setValue(value);
 
 		// When
-		List<Integer> actual = (new StringCalculator(value) {
-			@Override
-			protected int operator(List<Integer> intValues) {
-				return 0;
-			}
-		}).separateStringToInt();
+		List<Integer> actual = calc.separateStringToInt();
 
 		// Then
 		assertEquals("value를 separator로 나눈 값은 기대값과 같아야 한다.", expected, actual);
@@ -80,14 +79,10 @@ public class StringCalculatorTest {
 		expected.add(3);
 		expected.add(4);
 		String value = "//;\n1,2:3;4";
+		calc.setValue(value);
 
 		// When
-		List<Integer> actual = (new StringCalculator(value) {
-			@Override
-			protected int operator(List<Integer> intValues) {
-				return 0;
-			}
-		}).separateStringToInt();
+		List<Integer> actual = calc.separateStringToInt();
 
 		// Then
 		assertEquals("value를 separator로 나눈 값은 기대값과 같아야 한다.", expected, actual);
@@ -102,14 +97,10 @@ public class StringCalculatorTest {
 		expected.add(3);
 		expected.add(-4);
 		String value = "//;\n1,2:3;-4";
+		calc.setValue(value);
 
 		// When
-		List<Integer> actual = (new StringCalculator(value) {
-			@Override
-			protected int operator(List<Integer> intValues) {
-				return 0;
-			}
-		}).separateStringToInt();
+		List<Integer> actual = calc.separateStringToInt();
 
 		// Then
 		assertEquals("value를 separator로 나눈 값은 기대값과 같아야 한다.", expected, actual);
@@ -123,15 +114,11 @@ public class StringCalculatorTest {
 		expected.add(2);
 		expected.add(3);
 		String value = "//;\n1,2:3;-4";
+		calc.setValue(value);
 
 		// When
 		try {
-			(new StringCalculator(value) {
-				@Override
-				protected int operator(List<Integer> intValues) {
-					return 0;
-				}
-			}).separateStringToInt();
+			calc.separateStringToInt();
 			// Then
 			fail("Expected an RuntimeException to be thrown");
 		} catch (RuntimeException runtimeException) {
