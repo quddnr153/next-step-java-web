@@ -33,6 +33,7 @@ public class RequestHandler extends Thread {
 
 	private static final String UTF_8 = "UTF-8";
 	private static final String CLASS_PATH = "src/main/webapp";
+	private static final String INDEX_PATH = "/index.html";
 	private static final String CREATE_POST_PATH = "/user/create";
 	private static final String METHOD_POST = "POST";
 
@@ -51,25 +52,24 @@ public class RequestHandler extends Thread {
 			DataOutputStream dos = new DataOutputStream(out);
 			Map<String, String> parsedHeaderContents = getParsedHeaderContents(in);
 
-			String method = parsedHeaderContents.get(HttpRequestUtils.REQUEST_METHOD_STRING);
-			String pagePath = parsedHeaderContents.get(HttpRequestUtils.REQUEST_PATH_STRING);
-			String queryString = parsedHeaderContents.get(HttpRequestUtils.QUERY_STRING);
-			String httpContent = parsedHeaderContents.get(HttpRequestUtils.HTTP_CONTENT_STRING);
-
-			System.out.println(pagePath);
-			if (pagePath.equals(CREATE_POST_PATH)) {
-				if (method.equals(METHOD_POST)) {
-					System.out.println(httpContent);
-					Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(httpContent);
-					UserService userService = new UserService();
-					userService.createUser(makeUser(parsedQueryString));
-				}
+			if (parsedHeaderContents.isEmpty()) {
+				return;
 			}
 
-			byte[] body = getPage(pagePath);
+			String pagePath = parsedHeaderContents.get(HttpRequestUtils.REQUEST_PATH_STRING);
+			String httpContent = parsedHeaderContents.get(HttpRequestUtils.HTTP_CONTENT_STRING);
 
-			response200Header(dos, body.length);
-			responseBody(dos, body);
+			if (pagePath.equals(CREATE_POST_PATH)) {
+				Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(httpContent);
+				UserService userService = new UserService();
+
+				userService.createUser(makeUser(parsedQueryString));
+				response302Header(dos, INDEX_PATH);
+			} else {
+				byte[] body = getPage(pagePath);
+				response200Header(dos, body.length);
+				responseBody(dos, body);
+			}
 		} catch (IOException ioException) {
 			log.error(ioException.getMessage());
 		}
@@ -80,6 +80,16 @@ public class RequestHandler extends Thread {
 			dos.writeBytes("HTTP/1.1 200 OK \r\n");
 			dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
 			dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+			dos.writeBytes("\r\n");
+		} catch (IOException ioException) {
+			log.error(ioException.getMessage());
+		}
+	}
+
+	private void response302Header(final DataOutputStream dos, final String redirectPath) {
+		try {
+			dos.writeBytes("HTTP/1.1 302 Found \r\n");
+			dos.writeBytes("Location: " + redirectPath);
 			dos.writeBytes("\r\n");
 		} catch (IOException ioException) {
 			log.error(ioException.getMessage());
@@ -98,11 +108,17 @@ public class RequestHandler extends Thread {
 	private Map<String, String> getParsedHeaderContents(final InputStream in) throws IOException {
 		Map<String, String> headerContents = Maps.newHashMap();
 		BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
-		headerContents = HttpRequestUtils.parseRequestLine(br.readLine());
+		String url = br.readLine();
+
+		if (StringUtils.isEmpty(url)) {
+			return headerContents;
+		}
+
+		headerContents = HttpRequestUtils.parseRequestLine(url);
 
 		String header;
 		while (StringUtils.isNotEmpty(header = br.readLine())) {
-			System.out.println(header);
+			log.debug("header: {}", header);
 			Pair headerPair = HttpRequestUtils.parseHeader(header);
 			headerContents.put(headerPair.getKey(), headerPair.getValue());
 		}
