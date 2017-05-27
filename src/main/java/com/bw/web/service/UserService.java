@@ -13,8 +13,23 @@ import com.bw.web.model.User;
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-	public void createUser(final User user) {
-		log.info("create user: {}", user.toString());
+	public void create(final User user) {
+		log.debug("create user: {}", user.toString());
 		DataBase.addUser(user);
+	}
+
+	public boolean login(final User user) {
+		log.debug("login user: {}", user.toString());
+		User userInDataBase = DataBase.findUserById(user.getUserId());
+
+		if (userInDataBase == null) {
+			return false;
+		}
+
+		if (!user.getPassword().equals(userInDataBase.getPassword())) {
+			return false;
+		}
+
+		return true;
 	}
 }

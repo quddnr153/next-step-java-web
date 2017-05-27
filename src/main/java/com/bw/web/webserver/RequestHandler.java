@@ -33,8 +33,10 @@ public class RequestHandler extends Thread {
 
 	private static final String UTF_8 = "UTF-8";
 	private static final String CLASS_PATH = "src/main/webapp";
-	private static final String INDEX_PATH = "/index.html";
+	private static final String INDEX_GET_PATH = "/index.html";
 	private static final String CREATE_POST_PATH = "/user/create";
+	private static final String LOGIN_POST_PATH = "/user/login";
+	private static final String LOGIN_GET_PATH = "/user/login.html";
 	private static final String METHOD_POST = "POST";
 
 	private Socket connection;
@@ -63,8 +65,21 @@ public class RequestHandler extends Thread {
 				Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(httpContent);
 				UserService userService = new UserService();
 
-				userService.createUser(makeUser(parsedQueryString));
-				response302Header(dos, INDEX_PATH);
+				userService.create(makeUser(parsedQueryString));
+				response302Header(dos, INDEX_GET_PATH);
+			} else if (pagePath.equals(LOGIN_POST_PATH)) {
+				Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(httpContent);
+				UserService userService = new UserService();
+
+				if (userService.login(makeUser(parsedQueryString))) {
+					response302HeaderIncludedCookie(dos, INDEX_GET_PATH, "logined=true");
+				} else {
+					response302Header(dos, INDEX_GET_PATH);
+				}
+			} else if (pagePath.equals(LOGIN_GET_PATH)) {
+				byte[] body = getPage(pagePath);
+				response200Header(dos, body.length);
+				responseBody(dos, body);
 			} else {
 				byte[] body = getPage(pagePath);
 				response200Header(dos, body.length);
@@ -89,8 +104,18 @@ public class RequestHandler extends Thread {
 	private void response302Header(final DataOutputStream dos, final String redirectPath) {
 		try {
 			dos.writeBytes("HTTP/1.1 302 Found \r\n");
-			dos.writeBytes("Location: " + redirectPath);
-			dos.writeBytes("\r\n");
+			dos.writeBytes("Location: " + redirectPath + "\r\n");
+		} catch (IOException ioException) {
+			log.error(ioException.getMessage());
+		}
+	}
+
+	private void response302HeaderIncludedCookie(final DataOutputStream dos, final String redirectPath,
+		final String cookie) {
+		try {
+			dos.writeBytes("HTTP/1.1 302 Found \r\n");
+			dos.writeBytes("Location: " + redirectPath + "\r\n");
+			dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
 		} catch (IOException ioException) {
 			log.error(ioException.getMessage());
 		}
