@@ -73,6 +73,8 @@ public class RequestHandler extends Thread {
 		BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
 		String requestLine = br.readLine();
 
+		log.info(requestLine);
+
 		Map<String, String> parsedRequestLine = HttpRequestUtils.parseRequestLine(requestLine);
 
 		return Files.readAllBytes(new File("src/main/webapp" + parsedRequestLine.get("path")).toPath());
