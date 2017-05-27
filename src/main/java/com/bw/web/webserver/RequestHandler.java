@@ -14,12 +14,15 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bw.web.model.User;
 import com.bw.web.service.UserService;
 import com.bw.web.util.HttpRequestUtils;
+import com.bw.web.util.HttpRequestUtils.Pair;
+import com.bw.web.util.IOUtils;
 import com.google.common.collect.Maps;
 
 /**
@@ -30,6 +33,8 @@ public class RequestHandler extends Thread {
 
 	private static final String UTF_8 = "UTF-8";
 	private static final String CLASS_PATH = "src/main/webapp";
+	private static final String CREATE_POST_PATH = "/user/create";
+	private static final String METHOD_POST = "POST";
 
 	private Socket connection;
 
@@ -44,15 +49,21 @@ public class RequestHandler extends Thread {
 
 		try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 			DataOutputStream dos = new DataOutputStream(out);
-			Map<String, String> parsedRequestLine = getParsedRequestLine(in);
+			Map<String, String> parsedHeaderContents = getParsedHeaderContents(in);
 
-			String pagePath = parsedRequestLine.get(HttpRequestUtils.REQUEST_PATH_STRING);
-			String queryString = parsedRequestLine.get(HttpRequestUtils.QUERY_STRING);
+			String method = parsedHeaderContents.get(HttpRequestUtils.REQUEST_METHOD_STRING);
+			String pagePath = parsedHeaderContents.get(HttpRequestUtils.REQUEST_PATH_STRING);
+			String queryString = parsedHeaderContents.get(HttpRequestUtils.QUERY_STRING);
+			String httpContent = parsedHeaderContents.get(HttpRequestUtils.HTTP_CONTENT_STRING);
 
-			if (pagePath.equals("/user/create")) {
-				Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(queryString);
-				UserService userService = new UserService();
-				userService.createUser(makeUser(parsedQueryString));
+			System.out.println(pagePath);
+			if (pagePath.equals(CREATE_POST_PATH)) {
+				if (method.equals(METHOD_POST)) {
+					System.out.println(httpContent);
+					Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(httpContent);
+					UserService userService = new UserService();
+					userService.createUser(makeUser(parsedQueryString));
+				}
 			}
 
 			byte[] body = getPage(pagePath);
@@ -84,16 +95,26 @@ public class RequestHandler extends Thread {
 		}
 	}
 
-	private Map<String, String> getParsedRequestLine(final InputStream in) throws IOException {
-		Map<String, String> parsedRequestLine = Maps.newHashMap();
+	private Map<String, String> getParsedHeaderContents(final InputStream in) throws IOException {
+		Map<String, String> headerContents = Maps.newHashMap();
 		BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
-		String requestLine = br.readLine();
+		headerContents = HttpRequestUtils.parseRequestLine(br.readLine());
 
-		log.info(requestLine);
+		String header;
+		while (StringUtils.isNotEmpty(header = br.readLine())) {
+			System.out.println(header);
+			Pair headerPair = HttpRequestUtils.parseHeader(header);
+			headerContents.put(headerPair.getKey(), headerPair.getValue());
+		}
 
-		parsedRequestLine = HttpRequestUtils.parseRequestLine(requestLine);
+		String contentLength = headerContents.get(HttpRequestUtils.CONTENT_LENGTH_STRING);
 
-		return parsedRequestLine;
+		if (StringUtils.isNotEmpty(contentLength)) {
+			headerContents.put(HttpRequestUtils.HTTP_CONTENT_STRING,
+				IOUtils.readData(br, Integer.parseInt(contentLength)));
+		}
+
+		return headerContents;
 	}
 
 	private byte[] getPage(final String pagePath) throws IOException {

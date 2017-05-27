@@ -18,6 +18,8 @@ public class HttpRequestUtils {
 	public static final String REQUEST_PATH_STRING = "path";
 	public static final String REQUEST_VERSION_STRING = "version";
 	public static final String QUERY_STRING = "queryString";
+	public static final String HTTP_CONTENT_STRING = "httpContent";
+	public static final String CONTENT_LENGTH_STRING = "Content-Length";
 
 	private static final String SPACE_BAR = " ";
 	private static final String AND = "&";
