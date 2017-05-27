@@ -14,11 +14,17 @@ import com.google.common.collect.Maps;
  * @author Byungwook, Lee
  */
 public class HttpRequestUtils {
+	public static final String REQUEST_METHOD_STRING = "method";
+	public static final String REQUEST_PATH_STRING = "path";
+	public static final String REQUEST_VERSION_STRING = "version";
+	public static final String QUERY_STRING = "queryString";
+
 	private static final String SPACE_BAR = " ";
 	private static final String AND = "&";
 	private static final String SEMI_COLON = ";";
 	private static final String EQUALS = "=";
 	private static final String COLON_SPACE_BAR = ": ";
+	private static final String QUESTION_MARK = "\\?";
 
 	public static Map<String, String> parseRequestLine(final String requestLine) {
 		Map<String, String> result = Maps.newHashMap();
@@ -27,11 +33,18 @@ public class HttpRequestUtils {
 			return result;
 		}
 
-		List<String> tokens = Arrays.asList(requestLine.split(SPACE_BAR));
+		// {METHOD} {PATH?QUERY_STRING} {VERSION}
+		List<String> splitedRequestLine = Arrays.asList(requestLine.split(SPACE_BAR));
+		// {PATH} {QUERY_STRING}
+		List<String> splitedPath = Arrays.asList(splitedRequestLine.get(1).split(QUESTION_MARK));
 
-		result.put("method", tokens.get(0));
-		result.put("path", tokens.get(1));
-		result.put("version", tokens.get(2));
+		result.put(REQUEST_METHOD_STRING, splitedRequestLine.get(0));
+		result.put(REQUEST_PATH_STRING, splitedPath.get(0));
+		result.put(REQUEST_VERSION_STRING, splitedRequestLine.get(2));
+
+		if (splitedPath.size() == 2) {
+			result.put(QUERY_STRING, splitedPath.get(1));
+		}
 
 		return result;
 	}

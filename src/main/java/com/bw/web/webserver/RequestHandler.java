@@ -17,7 +17,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bw.web.model.User;
+import com.bw.web.service.UserService;
 import com.bw.web.util.HttpRequestUtils;
+import com.google.common.collect.Maps;
 
 /**
  * @author Byungwook, Lee
@@ -26,6 +29,7 @@ public class RequestHandler extends Thread {
 	private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
 	private static final String UTF_8 = "UTF-8";
+	private static final String CLASS_PATH = "src/main/webapp";
 
 	private Socket connection;
 
@@ -40,7 +44,18 @@ public class RequestHandler extends Thread {
 
 		try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 			DataOutputStream dos = new DataOutputStream(out);
-			byte[] body = getPage(in);
+			Map<String, String> parsedRequestLine = getParsedRequestLine(in);
+
+			String pagePath = parsedRequestLine.get(HttpRequestUtils.REQUEST_PATH_STRING);
+			String queryString = parsedRequestLine.get(HttpRequestUtils.QUERY_STRING);
+
+			if (pagePath.equals("/user/create")) {
+				Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(queryString);
+				UserService userService = new UserService();
+				userService.createUser(makeUser(parsedQueryString));
+			}
+
+			byte[] body = getPage(pagePath);
 
 			response200Header(dos, body.length);
 			responseBody(dos, body);
@@ -69,14 +84,28 @@ public class RequestHandler extends Thread {
 		}
 	}
 
-	private byte[] getPage(final InputStream in) throws IOException {
+	private Map<String, String> getParsedRequestLine(final InputStream in) throws IOException {
+		Map<String, String> parsedRequestLine = Maps.newHashMap();
 		BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
 		String requestLine = br.readLine();
 
 		log.info(requestLine);
 
-		Map<String, String> parsedRequestLine = HttpRequestUtils.parseRequestLine(requestLine);
+		parsedRequestLine = HttpRequestUtils.parseRequestLine(requestLine);
 
-		return Files.readAllBytes(new File("src/main/webapp" + parsedRequestLine.get("path")).toPath());
+		return parsedRequestLine;
+	}
+
+	private byte[] getPage(final String pagePath) throws IOException {
+		return Files.readAllBytes(new File(CLASS_PATH + pagePath).toPath());
+	}
+
+	private User makeUser(final Map<String, String> parsedQueryString) {
+		User user = new User();
+		user.setUserId(parsedQueryString.get("userId"));
+		user.setPassword(parsedQueryString.get("password"));
+		user.setName(parsedQueryString.get("name"));
+		user.setEmail(parsedQueryString.get("email"));
+		return user;
 	}
 }

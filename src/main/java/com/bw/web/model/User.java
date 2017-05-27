@@ -9,6 +9,8 @@ public class User {
 	private String name;
 	private String email;
 
+	public User() {}
+
 	public User(final String userId, final String password, final String name, final String email) {
 		this.userId = userId;
 		this.password = password;
@@ -46,5 +48,10 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Override
+	public String toString() {
+		return userId + ", " + password + ", " + name + ", " + email;
 	}
 }
