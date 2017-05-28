@@ -34,9 +34,16 @@ public class RequestHandler extends Thread {
 	private static final String UTF_8 = "UTF-8";
 	private static final String CLASS_PATH = "src/main/webapp";
 	private static final String INDEX_GET_PATH = "/index.html";
+	private static final String LOGIN_GET_PATH = "/user/login.html";
+	private static final String LIST_GET_PATH = "/user/list.html";
 	private static final String CREATE_POST_PATH = "/user/create";
 	private static final String LOGIN_POST_PATH = "/user/login";
-	private static final String LOGIN_GET_PATH = "/user/login.html";
+	private static final String USER_LIST_POST_PATH = "/user/list";
+	private static final String COOKIE_KEY_STRING = "logined";
+	private static final String LOGIN_SUCCESS_COOKIE_VALUE = "logined=true";
+	private static final String LOGIN_FAIL_COOKIE_VALUE = "logined=false";
+	private static final String DOC_TYPE_HTTP = "html";
+	private static final String DOC_TYPE_CSS = "css";
 	private static final String METHOD_POST = "POST";
 
 	private Socket connection;
@@ -72,17 +79,28 @@ public class RequestHandler extends Thread {
 				UserService userService = new UserService();
 
 				if (userService.login(makeUser(parsedQueryString))) {
-					response302HeaderIncludedCookie(dos, INDEX_GET_PATH, "logined=true");
+					response302HeaderIncludedCookie(dos, INDEX_GET_PATH, LOGIN_SUCCESS_COOKIE_VALUE);
 				} else {
-					response302Header(dos, INDEX_GET_PATH);
+					log.debug("user login fails");
+					response302HeaderIncludedCookie(dos, INDEX_GET_PATH, LOGIN_FAIL_COOKIE_VALUE);
 				}
 			} else if (pagePath.equals(LOGIN_GET_PATH)) {
 				byte[] body = getPage(pagePath);
-				response200Header(dos, body.length);
+				response200Header(dos, DOC_TYPE_HTTP, body.length);
+				responseBody(dos, body);
+			} else if (pagePath.equals(USER_LIST_POST_PATH)) {
+				if (parsedHeaderContents.containsKey(COOKIE_KEY_STRING)) {
+					response302Header(dos, LIST_GET_PATH);
+				} else {
+					response302Header(dos, LOGIN_GET_PATH);
+				}
+			} else if (pagePath.endsWith(".css")) {
+				byte[] body = getPage(pagePath);
+				response200Header(dos, DOC_TYPE_CSS, body.length);
 				responseBody(dos, body);
 			} else {
 				byte[] body = getPage(pagePath);
-				response200Header(dos, body.length);
+				response200Header(dos, DOC_TYPE_HTTP, body.length);
 				responseBody(dos, body);
 			}
 		} catch (IOException ioException) {
@@ -90,10 +108,10 @@ public class RequestHandler extends Thread {
 		}
 	}
 
-	private void response200Header(final DataOutputStream dos, final int lengthOfBodyContent) {
+	private void response200Header(final DataOutputStream dos, final String docType, final int lengthOfBodyContent) {
 		try {
 			dos.writeBytes("HTTP/1.1 200 OK \r\n");
-			dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+			dos.writeBytes("Content-Type: text/" + docType + ";charset=utf-8\r\n");
 			dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
 			dos.writeBytes("\r\n");
 		} catch (IOException ioException) {
@@ -115,7 +133,7 @@ public class RequestHandler extends Thread {
 		try {
 			dos.writeBytes("HTTP/1.1 302 Found \r\n");
 			dos.writeBytes("Location: " + redirectPath + "\r\n");
-			dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
+			dos.writeBytes("Set-Cookie: " + cookie + "; Path=/\r\n");
 		} catch (IOException ioException) {
 			log.error(ioException.getMessage());
 		}
