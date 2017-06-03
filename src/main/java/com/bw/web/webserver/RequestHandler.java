@@ -12,12 +12,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bw.web.db.DataBase;
 import com.bw.web.model.User;
 import com.bw.web.service.UserService;
 import com.bw.web.util.HttpRequestUtils;
@@ -55,7 +57,7 @@ public class RequestHandler extends Thread {
 	@Override
 	public void run() {
 		log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-			connection.getPort());
+				connection.getPort());
 
 		try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 			DataOutputStream dos = new DataOutputStream(out);
@@ -67,6 +69,13 @@ public class RequestHandler extends Thread {
 
 			String pagePath = parsedHeaderContents.get(HttpRequestUtils.REQUEST_PATH_STRING);
 			String httpContent = parsedHeaderContents.get(HttpRequestUtils.HTTP_CONTENT_STRING);
+			String cookieContent = parsedHeaderContents.get(HttpRequestUtils.COOKIE_STRING);
+
+			boolean isLogined = false;
+			if (StringUtils.isNotEmpty(cookieContent)) {
+				Map<String, String> cookies = HttpRequestUtils.parseCookies(cookieContent);
+				isLogined = getLoginCookieToBoolean(cookies.get("logined"));
+			}
 
 			if (pagePath.equals(CREATE_POST_PATH)) {
 				Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(httpContent);
@@ -89,11 +98,15 @@ public class RequestHandler extends Thread {
 				response200Header(dos, DOC_TYPE_HTTP, body.length);
 				responseBody(dos, body);
 			} else if (pagePath.equals(USER_LIST_POST_PATH)) {
-				if (parsedHeaderContents.containsKey(COOKIE_KEY_STRING)) {
-					response302Header(dos, LIST_GET_PATH);
-				} else {
+				if (!isLogined) {
 					response302Header(dos, LOGIN_GET_PATH);
+					return;
 				}
+
+				byte[] body = getUserListToByte();
+
+				response200Header(dos, DOC_TYPE_HTTP, body.length);
+				responseBody(dos, body);
 			} else if (pagePath.endsWith(".css")) {
 				byte[] body = getPage(pagePath);
 				response200Header(dos, DOC_TYPE_CSS, body.length);
@@ -129,11 +142,12 @@ public class RequestHandler extends Thread {
 	}
 
 	private void response302HeaderIncludedCookie(final DataOutputStream dos, final String redirectPath,
-		final String cookie) {
+												 final String cookie) {
 		try {
 			dos.writeBytes("HTTP/1.1 302 Found \r\n");
-			dos.writeBytes("Location: " + redirectPath + "\r\n");
-			dos.writeBytes("Set-Cookie: " + cookie + "; Path=/\r\n");
+			dos.writeBytes("Location: " + redirectPath + " \r\n");
+			dos.writeBytes("Set-Cookie: " + cookie + "; Path=/ \r\n");
+			dos.writeBytes("\r\n");
 		} catch (IOException ioException) {
 			log.error(ioException.getMessage());
 		}
@@ -170,7 +184,7 @@ public class RequestHandler extends Thread {
 
 		if (StringUtils.isNotEmpty(contentLength)) {
 			headerContents.put(HttpRequestUtils.HTTP_CONTENT_STRING,
-				IOUtils.readData(br, Integer.parseInt(contentLength)));
+					IOUtils.readData(br, Integer.parseInt(contentLength)));
 		}
 
 		return headerContents;
@@ -187,5 +201,31 @@ public class RequestHandler extends Thread {
 		user.setName(parsedQueryString.get("name"));
 		user.setEmail(parsedQueryString.get("email"));
 		return user;
+	}
+
+	private boolean getLoginCookieToBoolean(final String cookieValue) {
+		if ("true".equals(cookieValue)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private byte[] getUserListToByte() {
+		Collection<User> users = DataBase.findAll();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("<table border='1'>");
+		for (User user : users) {
+			sb.append("<tr>");
+			sb.append("<td>" + user.getUserId() + "</td>");
+			sb.append("<td>" + user.getName() + "</td>");
+			sb.append("<td>" + user.getEmail() + "</td>");
+			sb.append("</tr>");
+		}
+		sb.append("</table>");
+
+		return sb.toString().getBytes();
 	}
 }
