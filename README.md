@@ -4,7 +4,7 @@
 Study plan
 - 각 Chapter 별로 branch를 만들어 코드 공유
 
-* Chapter 3 - [Web app version - 1.0](https://github.com/quddnr153/next-step-java-web/tree/chapter-3-web=app)
+* Chapter 3 - [Web app version - 1.0](https://github.com/quddnr153/next-step-java-web/tree/chapter-3-basic-web-app)
 * Chapter 4 - [Web app version - 1.1](https://github.com/quddnr153/next-step-java-web/tree/chapter-4)
 
 ## Requirements
