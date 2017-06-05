@@ -7,12 +7,17 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Maps;
 
 /**
  * @author Byungwook, Lee
  */
 public class HttpResponse {
+	private static final Logger log = LoggerFactory.getLogger(HttpResponse.class);
+
 	private static final String CLASS_PATH = "src/main/webapp";
 
 	private DataOutputStream dos;
@@ -23,42 +28,54 @@ public class HttpResponse {
 		headerContents = Maps.newHashMap();
 	}
 
-	public void addHeader(final String key, final String value) throws IOException {
+	public void addHeader(final String key, final String value) {
 		headerContents.put(key, value);
 	}
 
-	public void forward(final String path) throws IOException {
-		byte[] body = getPage(path);
+	public void forward(final String path) {
+		try {
+			byte[] body = getPage(path);
 
-		if (path.endsWith(".html")) {
-			headerContents.put("Content-Type", "text/html;charset=utf-8");
-		} else if (path.endsWith(".css")) {
-			headerContents.put("Content-Type", "text/css");
-		} else if (path.endsWith(".js")) {
-			headerContents.put("Content-Type", "application/javascript");
+			if (path.endsWith(".html")) {
+				headerContents.put("Content-Type", "text/html;charset=utf-8");
+			} else if (path.endsWith(".css")) {
+				headerContents.put("Content-Type", "text/css");
+			} else if (path.endsWith(".js")) {
+				headerContents.put("Content-Type", "application/javascript");
+			}
+
+			headerContents.put("Content-Length", Integer.toString(body.length));
+
+			response200Header(body.length);
+			responseBody(body);
+		} catch (IOException ioException) {
+			log.error(ioException.getMessage());
 		}
-
-		headerContents.put("Content-Length", Integer.toString(body.length));
-
-		response200Header(body.length);
-		responseBody(body);
 	}
 
-	public void forwardBody(final String body) throws IOException {
-		byte[] bodyContents = body.getBytes();
+	public void forwardBody(final String body) {
+		try {
+			byte[] bodyContents = body.getBytes();
 
-		headerContents.put("Content-Type", "text/html;charset=utf-8");
-		headerContents.put("Content-Length", Integer.toString(bodyContents.length));
+			headerContents.put("Content-Type", "text/html;charset=utf-8");
+			headerContents.put("Content-Length", Integer.toString(bodyContents.length));
 
-		response200Header(bodyContents.length);
-		responseBody(bodyContents);
+			response200Header(bodyContents.length);
+			responseBody(bodyContents);
+		} catch (IOException ioException) {
+			log.error(ioException.getMessage());
+		}
 	}
 
-	public void sendRedirect(final String path) throws IOException {
-		dos.writeBytes("HTTP/1.1 302 Found \r\n");
-		processHeaders();
-		dos.writeBytes("Location: " + path + " \r\n");
-		dos.writeBytes("\r\n");
+	public void sendRedirect(final String path) {
+		try {
+			dos.writeBytes("HTTP/1.1 302 Found \r\n");
+			processHeaders();
+			dos.writeBytes("Location: " + path + " \r\n");
+			dos.writeBytes("\r\n");
+		} catch (IOException ioException) {
+			log.error(ioException.getMessage());
+		}
 	}
 
 	private void response200Header(final int length) throws IOException {
