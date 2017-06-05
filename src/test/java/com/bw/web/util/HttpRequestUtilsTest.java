@@ -31,46 +31,6 @@ public class HttpRequestUtilsTest {
 	public void tearDown() throws Exception {}
 
 	@Test
-	public void testParseRequestLine_Basic_Guidance() {
-		// Given
-		String requestLine = "GET /index.html HTTP/1.1";
-		Map<String, String> expected = Maps.newHashMap();
-		expected.put("method", "GET");
-		expected.put("path", "/index.html");
-		expected.put("version", "HTTP/1.1");
-
-		// When
-		Map<String, String> actual = HttpRequestUtils.parseRequestLine(requestLine);
-
-		// Then
-		assertEquals("GET /index.html HTTP/1.1", expected, actual);
-		assertEquals("method = GET 이다.", expected.get("method"), actual.get("method"));
-		assertEquals("path = /index.html 이다.", expected.get("path"), actual.get("path"));
-		assertEquals("version = HTTP/1.1 이다.", expected.get("version"), actual.get("version"));
-	}
-
-	@Test
-	public void testParseRequestLine_Query_String() {
-		// Given
-		String requestLine = "GET /user/create?userId=test&password=test HTTP/1.1";
-		Map<String, String> expected = Maps.newHashMap();
-		expected.put("method", "GET");
-		expected.put("path", "/user/create");
-		expected.put("version", "HTTP/1.1");
-		expected.put("queryString", "userId=test&password=test");
-
-		// When
-		Map<String, String> actual = HttpRequestUtils.parseRequestLine(requestLine);
-
-		// Then
-		assertEquals("GET /index.html HTTP/1.1", expected, actual);
-		assertEquals("method = GET 이다.", expected.get("method"), actual.get("method"));
-		assertEquals("path = /index.html 이다.", expected.get("path"), actual.get("path"));
-		assertEquals("version = HTTP/1.1 이다.", expected.get("version"), actual.get("version"));
-		assertEquals("userId=test&password=test 이다.", expected.get("queryString"), actual.get("queryString"));
-	}
-
-	@Test
 	public void testParseQueryString_Basic_Guidance() {
 		// Given
 		String queryString = "id=test&password=test";

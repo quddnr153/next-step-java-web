@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bw.web.db.DataBase;
 import com.bw.web.model.User;
+import com.bw.web.util.HttpRequest;
 
 /**
  * @author Byungwook, Lee
@@ -30,5 +31,16 @@ public class UserService {
 		}
 
 		return true;
+	}
+
+	public User makeUser(final HttpRequest request) {
+		User user = new User();
+
+		user.setUserId(request.getParameter("userId"));
+		user.setPassword(request.getParameter("password"));
+		user.setName(request.getParameter("name"));
+		user.setEmail(request.getParameter("email"));
+
+		return user;
 	}
 }
