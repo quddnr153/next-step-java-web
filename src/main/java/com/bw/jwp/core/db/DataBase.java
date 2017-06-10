@@ -9,6 +9,10 @@ import com.google.common.collect.Maps;
 public class DataBase {
 	private static Map<String, User> users = Maps.newHashMap();
 
+	static {
+		users.put("admin", new User("admin", "admin", "admin", "admin@admin.com"));
+	}
+
 	public static void addUser(User user) {
 		users.put(user.getUserId(), user);
 	}
@@ -19,5 +23,9 @@ public class DataBase {
 
 	public static Collection<User> findAll() {
 		return users.values();
+	}
+
+	public static void deleteUser(final String userId) {
+		users.remove(userId);
 	}
 }

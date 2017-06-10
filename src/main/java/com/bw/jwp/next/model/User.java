@@ -6,6 +6,9 @@ public class User {
 	private String name;
 	private String email;
 
+	public User() {
+	}
+
 	public User(String userId, String password, String name, String email) {
 		this.userId = userId;
 		this.password = password;
@@ -17,16 +20,50 @@ public class User {
 		return userId;
 	}
 
+	public void setUserId(final String userId) {
+		this.userId = userId;
+	}
+
 	public String getPassword() {
 		return password;
+	}
+
+	public void setPassword(final String password) {
+		this.password = password;
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public void setName(final String name) {
+		this.name = name;
+	}
+
 	public String getEmail() {
 		return email;
+	}
+
+	public void setEmail(final String email) {
+		this.email = email;
+	}
+
+	public void update(User updateUser) {
+		this.password = updateUser.password;
+		this.name = updateUser.name;
+		this.email = updateUser.email;
+	}
+
+	public boolean matchPassword(String password) {
+		if (password == null) {
+			return false;
+		}
+
+		return this.password.equals(password);
+	}
+
+	public boolean isSameUser(User user) {
+		return userId.equals(user.userId);
 	}
 
 	@Override
@@ -66,4 +103,8 @@ public class User {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", name=" + name + ", email=" + email + "]";
+	}
 }
