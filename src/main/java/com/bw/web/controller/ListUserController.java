@@ -1,15 +1,12 @@
 package com.bw.web.controller;
 
 import java.util.Collection;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.bw.web.db.DataBase;
 import com.bw.web.model.User;
 import com.bw.web.util.HttpRequest;
-import com.bw.web.util.HttpRequestUtils;
 import com.bw.web.util.HttpResponse;
+import com.bw.web.util.HttpSession;
 
 /**
  * @author Byungwook, Lee
@@ -17,13 +14,12 @@ import com.bw.web.util.HttpResponse;
 public class ListUserController extends AbstractController {
 
 	@Override
-	public void doPost(HttpRequest request, HttpResponse response) {}
+	public void doPost(final HttpRequest request, final HttpResponse response) {
+	}
 
 	@Override
-	public void doGet(HttpRequest request, HttpResponse response) {
-		String cookie = request.getHeader("Cookie");
-
-		if (!isLogin(cookie)) {
+	public void doGet(final HttpRequest request, final HttpResponse response) {
+		if (!isLogin(request.getSession())) {
 			response.sendRedirect("/user/login.html");
 
 			return;
@@ -32,24 +28,17 @@ public class ListUserController extends AbstractController {
 		response.forwardBody(getUsers());
 	}
 
-	private boolean isLogin(final String cookie) {
-		boolean isLogined = false;
-
-		if (StringUtils.isNotEmpty(cookie)) {
-			Map<String, String> cookies = HttpRequestUtils.parseCookies(cookie);
-			isLogined = getLoginCookieToBoolean(cookies.get("logined"));
-		}
-
-		return isLogined;
+	private boolean isLogin(final HttpSession session) {
+		return session.getAttrubute("user") != null;
 	}
 
 	private String getUsers() {
-		Collection<User> users = DataBase.findAll();
+		final Collection<User> users = DataBase.findAll();
 
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 
 		sb.append("<table border='1'>");
-		for (User user : users) {
+		for (final User user : users) {
 			sb.append("<tr>");
 			sb.append("<td>" + user.getUserId() + "</td>");
 			sb.append("<td>" + user.getName() + "</td>");
@@ -62,11 +51,6 @@ public class ListUserController extends AbstractController {
 	}
 
 	private boolean getLoginCookieToBoolean(final String cookieValue) {
-		if ("true".equals(cookieValue)) {
-			return true;
-		} else {
-			return false;
-		}
+		return "true".equals(cookieValue);
 	}
-
 }

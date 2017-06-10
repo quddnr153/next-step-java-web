@@ -27,6 +27,7 @@ public class HttpRequest {
 	private static final String QUESTION_MARK = "\\?";
 	private static final String UTF_8 = "UTF-8";
 	private static final String CONTENT_LENGTH_STRING = "Content-Length";
+	private static final String COOKIE = "Cookie";
 
 	private Map<String, String> request = Maps.newHashMap();
 
@@ -40,6 +41,12 @@ public class HttpRequest {
 
 	public String getPath() {
 		return request.get(PATH);
+	}
+
+	public Map<String, String> getCookies() {
+		final String cookie = getHeader(COOKIE);
+
+		return HttpRequestUtils.parseCookies(cookie);
 	}
 
 	public String getHeader(final String fieldKey) {
@@ -102,5 +109,9 @@ public class HttpRequest {
 		}
 
 		return result;
+	}
+
+	public HttpSession getSession() {
+		return HttpSessions.getSession(getCookies().get("JSESSIONID"));
 	}
 }

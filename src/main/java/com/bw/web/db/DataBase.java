@@ -12,6 +12,11 @@ import com.google.common.collect.Maps;
 public class DataBase {
 	private static Map<String, User> users = Maps.newHashMap();
 
+	static {
+		User user = new User("admin", "admin", "admin", "admin@admin.com");
+		addUser(user);
+	}
+
 	public static void addUser(final User user) {
 		users.put(user.getUserId(), user);
 	}
