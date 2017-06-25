@@ -11,12 +11,12 @@ import com.bw.jwp.core.jdbc.ConnectionManager;
 import com.bw.jwp.next.model.User;
 
 public class UserDao {
-	public void insert(User user) throws SQLException {
+	public void insert(final User user) throws SQLException {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		try {
 			con = ConnectionManager.getConnection();
-			String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?)";
+			final String sql = "INSERT INTO USERS (userId, password, name, email) VALUES (?, ?, ?, ?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, user.getUserId());
 			pstmt.setString(2, user.getPassword());
@@ -35,13 +35,62 @@ public class UserDao {
 		}
 	}
 
-	public void update(User user) throws SQLException {
-		// TODO 구현 필요함.
+	public void update(final User user) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = ConnectionManager.getConnection();
+			final String sql = "UPDATE USERS SET name = ?, email = ? WHERE userId = ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, user.getName());
+			pstmt.setString(2, user.getEmail());
+			pstmt.setString(3, user.getUserId());
+
+			pstmt.executeUpdate();
+		} finally {
+			if (pstmt != null) {
+				pstmt.close();
+			}
+
+			if (con != null) {
+				con.close();
+			}
+		}
 	}
 
 	public List<User> findAll() throws SQLException {
-		// TODO 구현 필요함.
-		return new ArrayList<User>();
+		final List<User> users = new ArrayList<>();
+
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			con = ConnectionManager.getConnection();
+			final String sql = "SELECT userId, password, name, email FROM USERS";
+			pstmt = con.prepareStatement(sql);
+
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				final User user = new User(rs.getString("userId"), rs.getString("password"),
+						rs.getString("name"), rs.getString("email"));
+
+				users.add(user);
+			}
+
+			return users;
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (pstmt != null) {
+				pstmt.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
 	}
 
 	public User findByUserId(String userId) throws SQLException {
@@ -50,7 +99,7 @@ public class UserDao {
 		ResultSet rs = null;
 		try {
 			con = ConnectionManager.getConnection();
-			String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
+			String sql = "SELECT userId, password, name, email FROM USERS WHERE userId=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, userId);
 
