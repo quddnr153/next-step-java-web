@@ -11,46 +11,22 @@ import com.bw.jwp.core.jdbc.ConnectionManager;
 import com.bw.jwp.next.model.User;
 
 public class UserDao {
-	public void insert(final User user) throws SQLException {
-		final Connection con = ConnectionManager.getConnection();
-		final String sql = createQueryForInsert();
-		final PreparedStatement pstmt = con.prepareStatement(sql);
-
-		setValuesForInsert(user, pstmt);
-		pstmt.executeUpdate();
-
-		pstmt.close();
-		con.close();
-	}
-
-	private String createQueryForInsert() {
+	String createQueryForInsert() {
 		return "INSERT INTO USERS (userId, password, name, email) VALUES (?, ?, ?, ?)";
 	}
 
-	private void setValuesForInsert(final User user, final PreparedStatement pstmt) throws SQLException {
+	void setValuesForInsert(final User user, final PreparedStatement pstmt) throws SQLException {
 		pstmt.setString(1, user.getUserId());
 		pstmt.setString(2, user.getPassword());
 		pstmt.setString(3, user.getName());
 		pstmt.setString(4, user.getEmail());
 	}
 
-	public void update(final User user) throws SQLException {
-		final Connection con = ConnectionManager.getConnection();
-		final String sql = createQueryForUpdate();
-		final PreparedStatement pstmt = con.prepareStatement(sql);
-
-		setValuesForUpdate(user, pstmt);
-		pstmt.executeUpdate();
-
-		pstmt.close();
-		con.close();
-	}
-
-	private String createQueryForUpdate() {
+	String createQueryForUpdate() {
 		return "UPDATE USERS SET name = ?, email = ? WHERE userId = ?";
 	}
 
-	private void setValuesForUpdate(final User user, final PreparedStatement pstmt) throws SQLException {
+	void setValuesForUpdate(final User user, final PreparedStatement pstmt) throws SQLException {
 		pstmt.setString(1, user.getName());
 		pstmt.setString(2, user.getEmail());
 		pstmt.setString(3, user.getUserId());
