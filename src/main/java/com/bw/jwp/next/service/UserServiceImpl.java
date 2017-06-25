@@ -1,7 +1,5 @@
 package com.bw.jwp.next.service;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,30 +20,18 @@ public class UserServiceImpl implements UserService {
 
 		final UserDao userDao = new UserDao();
 
-		try {
-			userDao.insert(user);
-		} catch (SQLException sqlException) {
-			LOG.error(sqlException.getMessage());
-		}
+		userDao.insert(user);
 	}
 
 	@Override
 	public boolean login(final User user) {
 		LOG.debug("login user: {}", user);
 		boolean result = true;
-
 		final UserDao userDao = new UserDao();
 
-		try {
-			User userInDataBase = userDao.findByUserId(user.getUserId());
+		User userInDataBase = userDao.findByUserId(user.getUserId());
 
-			if (userInDataBase == null || !user.getPassword().equals(userInDataBase.getPassword())) {
-				result = false;
-			}
-
-		} catch (SQLException sqlException) {
-			LOG.error(sqlException.getMessage());
-
+		if (userInDataBase == null || !user.getPassword().equals(userInDataBase.getPassword())) {
 			result = false;
 		}
 
@@ -56,39 +42,20 @@ public class UserServiceImpl implements UserService {
 	public List<User> getUsers() {
 		final UserDao userDao = new UserDao();
 
-		List<User> users = new ArrayList<>();
-
-		try {
-			users = userDao.findAll();
-		} catch (SQLException sqlException) {
-			LOG.error(sqlException.getMessage());
-		}
-
-		return users;
+		return userDao.findAll();
 	}
 
 	@Override
 	public User getUser(final String userId) {
-		User user = new User();
 		final UserDao userDao = new UserDao();
 
-		try {
-			user = userDao.findByUserId(userId);
-		} catch (SQLException sqlException) {
-			LOG.error(sqlException.getMessage());
-		}
-
-		return user;
+		return userDao.findByUserId(userId);
 	}
 
 	@Override
 	public void update(final User user) {
 		final UserDao userDao = new UserDao();
 
-		try {
-			userDao.update(user);
-		} catch (SQLException sqlException) {
-			LOG.error(sqlException.getMessage());
-		}
+		userDao.update(user);
 	}
 }
