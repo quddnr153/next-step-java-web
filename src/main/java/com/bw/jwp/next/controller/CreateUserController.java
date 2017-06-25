@@ -1,11 +1,5 @@
 package com.bw.jwp.next.controller;
 
-import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,31 +10,13 @@ import com.bw.jwp.next.model.User;
 import com.bw.jwp.next.service.UserService;
 import com.bw.jwp.next.service.UserServiceImpl;
 
-@WebServlet(value = {"/users/create", "/users/form"})
-public class CreateUserController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+public class CreateUserController implements Controller {
 	private static final Logger LOG = LoggerFactory.getLogger(CreateUserController.class);
 
-	private UserService userService;
+	private UserService userService = new UserServiceImpl();
 
 	@Override
-	public void init() throws ServletException {
-		userService = new UserServiceImpl();
-	}
-
-	@Override
-	protected void doGet(final HttpServletRequest req, final HttpServletResponse res)
-			throws ServletException, IOException {
-		LOG.debug("Get user create form page");
-
-		final RequestDispatcher rd = req.getRequestDispatcher("/user/form.jsp");
-
-		rd.forward(req, res);
-	}
-
-	@Override
-	protected void doPost(final HttpServletRequest req, final HttpServletResponse res)
-			throws ServletException, IOException {
+	public String execute(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
 		final User user = new User(req.getParameter("userId"), req.getParameter("password"),
 				req.getParameter("name"), req.getParameter("email"));
 
@@ -48,6 +24,6 @@ public class CreateUserController extends HttpServlet {
 
 		userService.create(user);
 
-		res.sendRedirect("/");
+		return "redirect:/";
 	}
 }
