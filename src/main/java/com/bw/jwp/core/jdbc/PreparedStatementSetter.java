@@ -1,4 +1,4 @@
-package com.bw.jwp.next.dao;
+package com.bw.jwp.core.jdbc;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

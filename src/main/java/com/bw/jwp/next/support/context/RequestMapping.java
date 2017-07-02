@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bw.jwp.next.controller.Controller;
+import com.bw.jwp.next.controller.CreateQuestionController;
 import com.bw.jwp.next.controller.CreateUserController;
 import com.bw.jwp.next.controller.ForwardController;
 import com.bw.jwp.next.controller.HomeController;
@@ -36,6 +37,7 @@ public class RequestMapping {
 		mappings.put("/users/create", new CreateUserController());
 		mappings.put("/users/updateForm", new UpdateFormController());
 		mappings.put("/users/update", new UpdateUserController());
+		mappings.put("/questions/create", new CreateQuestionController());
 
 		LOG.info("initiate mappings");
 	}

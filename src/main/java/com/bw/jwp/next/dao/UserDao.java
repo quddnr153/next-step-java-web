@@ -2,6 +2,7 @@ package com.bw.jwp.next.dao;
 
 import java.util.List;
 
+import com.bw.jwp.core.jdbc.JdbcTemplate;
 import com.bw.jwp.next.model.User;
 
 public class UserDao {
@@ -43,7 +44,7 @@ public class UserDao {
 		);
 	}
 
-	public User findByUserId(String userId) {
+	public User findByUserId(final String userId) {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate();
 		final String sql = "SELECT userId, password, name, email FROM USERS WHERE userId=?";
 

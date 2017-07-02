@@ -1,4 +1,4 @@
-package com.bw.jwp.next.dao;
+package com.bw.jwp.core.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +10,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bw.jwp.core.jdbc.ConnectionManager;
 import com.bw.jwp.next.exception.DataAccessException;
 
 /**
