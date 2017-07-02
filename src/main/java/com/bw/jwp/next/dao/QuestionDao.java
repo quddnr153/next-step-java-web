@@ -25,7 +25,7 @@ public class QuestionDao {
 		});
 	}
 
-	public void updteTitleAndContents(final Question question) {
+	public void updateTitleAndContents(final Question question) {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate();
 		final String sql = "UPDATE QUESTIONS"
 				+ " SET title = ?, contents = ?"
@@ -38,7 +38,7 @@ public class QuestionDao {
 		});
 	}
 
-	public void updteCountOfAnswer(final Question question) {
+	public void updateCountOfAnswer(final Question question) {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate();
 		final String sql = "UPDATE QUESTIONS"
 				+ " SET countOfAnswer = countOfAnswer + 1"
@@ -58,7 +58,7 @@ public class QuestionDao {
 						rs.getString("writer"),
 						rs.getString("title"),
 						rs.getString("contents"),
-						rs.getString("createdDate"),
+						rs.getTimestamp("createdDate").toString(),
 						rs.getInt("countOfAnswer")))
 		);
 	}
@@ -72,7 +72,7 @@ public class QuestionDao {
 						rs.getString("writer"),
 						rs.getString("title"),
 						rs.getString("contents"),
-						rs.getString("createdDate"),
+						rs.getTimestamp("createdDate").toString(),
 						rs.getInt("countOfAnswer")))
 		);
 	}

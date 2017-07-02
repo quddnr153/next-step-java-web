@@ -8,7 +8,7 @@ import com.bw.jwp.next.model.Answer;
  * @author Byungwook, Lee
  */
 public interface AnswerService {
-	void insert(final Answer answer);
+	Answer insert(final Answer answer);
 
 	void updateContents(final Answer answer);
 

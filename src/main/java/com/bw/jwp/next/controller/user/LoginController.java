@@ -1,4 +1,4 @@
-package com.bw.jwp.next.controller;
+package com.bw.jwp.next.controller.user;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bw.jwp.next.controller.Controller;
 import com.bw.jwp.next.model.User;
 import com.bw.jwp.next.service.UserService;
 import com.bw.jwp.next.service.UserServiceImpl;

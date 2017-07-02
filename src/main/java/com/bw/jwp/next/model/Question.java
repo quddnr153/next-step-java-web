@@ -14,6 +14,29 @@ public class Question {
 	public Question() {
 	}
 
+	public Question(final long questionId) {
+		this.questionId = questionId;
+	}
+
+	public Question(final long questionId, final int countOfAnswer) {
+		this.questionId = questionId;
+		this.countOfAnswer = countOfAnswer;
+	}
+
+	public Question(final long questionId, final String title, final String contents) {
+		this.questionId = questionId;
+		this.title = title;
+		this.contents = contents;
+	}
+
+	public Question(final String writer, final String title, final String contents,
+					final int countOfAnswer) {
+		this.writer = writer;
+		this.title = title;
+		this.contents = contents;
+		this.countOfAnswer = countOfAnswer;
+	}
+
 	public Question(final long questionId, final String writer, final String title, final String contents,
 					final String createdDate, final int countOfAnswer) {
 		this.questionId = questionId;

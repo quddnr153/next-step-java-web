@@ -23,13 +23,13 @@
 								</strong>
 								<div class="auth-info">
 									<i class="icon-add-comment"></i>
-									<span class="time"><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"
-																	   value="${each.createdDate}"/></span>
+									<span class="time">${each.createdDate}</span>
+										<%--<span class="time"><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${each.createdDate}" /></span>--%>
 									<a href="#" class="author">${each.writer}</a>
 								</div>
 								<div class="reply" title="댓글">
 									<i class="icon-reply"></i>
-									<span class="point">${each.countOfComment}</span>
+									<span class="point">${each.countOfAnswer}</span>
 								</div>
 							</div>
 						</div>

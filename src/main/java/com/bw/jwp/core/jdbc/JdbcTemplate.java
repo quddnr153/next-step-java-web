@@ -18,14 +18,25 @@ import com.bw.jwp.next.exception.DataAccessException;
 public class JdbcTemplate {
 	private static final Logger LOG = LoggerFactory.getLogger(JdbcTemplate.class);
 
-	public void update(final String sql, final PreparedStatementSetter pss) {
+	public long update(final String sql, final PreparedStatementSetter pss) {
 		try (final Connection con = ConnectionManager.getConnection();
 			 final PreparedStatement pstmt = con.prepareStatement(sql)) {
 			pss.setValues(pstmt);
 			pstmt.executeUpdate();
 
+			ResultSet generatedKeys = pstmt.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				long id = generatedKeys.getLong(1);
+
+				return id;
+			} else {
+				return 0;
+			}
+
 		} catch (SQLException sqlException) {
 			LOG.error(sqlException.getMessage());
+
+			return 0;
 		}
 	}
 

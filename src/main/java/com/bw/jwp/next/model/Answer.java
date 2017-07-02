@@ -13,8 +13,14 @@ public class Answer {
 	public Answer() {
 	}
 
+	public Answer(final String writer, final String contents, final long questionId) {
+		this.writer = writer;
+		this.contents = contents;
+		this.questionId = questionId;
+	}
+
 	public Answer(final long answerId, final String writer, final String contents, final String createdDate,
-				final long questionId) {
+				  final long questionId) {
 		this.answerId = answerId;
 		this.writer = writer;
 		this.contents = contents;

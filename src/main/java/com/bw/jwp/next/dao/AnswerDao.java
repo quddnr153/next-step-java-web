@@ -9,19 +9,20 @@ import com.bw.jwp.next.model.Answer;
  * @author Byungwook, Lee
  */
 public class AnswerDao {
-	public void insert(final Answer answer) {
+	public Answer insert(final Answer answer) {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate();
 		final String sql = "INSERT INTO ANSWERS"
 				+ " (writer, contents, createdDate, questionId)"
 				+ " VALUES"
-				+ " (?, ?, ?, ?)";
+				+ " (?, ?, CURRENT_TIMESTAMP(), ?)";
 
-		jdbcTemplate.update(sql, pstmt -> {
+		long id = jdbcTemplate.update(sql, pstmt -> {
 			pstmt.setString(1, answer.getWriter());
 			pstmt.setString(2, answer.getContents());
-			pstmt.setString(3, answer.getCreatedDate());
-			pstmt.setLong(4, answer.getQuestionId());
+			pstmt.setLong(3, answer.getQuestionId());
 		});
+
+		return findByAnswerId(id);
 	}
 
 	public void updateContents(final Answer answer) {
@@ -70,5 +71,13 @@ public class AnswerDao {
 						rs.getString("contents"),
 						rs.getString("createdDate"),
 						rs.getLong("questionId")));
+	}
+
+	public long findLastInsertId() {
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate();
+		final String sql = "SELECT LAST_INSERT_ID()";
+
+		return jdbcTemplate.queryForObject(sql, pstmt -> {
+		}, rs -> rs.getLong(1));
 	}
 }

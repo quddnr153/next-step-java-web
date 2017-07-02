@@ -14,7 +14,7 @@ public interface QuestionService {
 
 	Question getQuestion(final long questionId);
 
-	void updteTitleAndContents(final Question question);
+	void updateTitleAndContents(final Question question);
 
-	void updteCountOfAnswer(final Question question);
+	void updateCountOfAnswer(final Question question);
 }

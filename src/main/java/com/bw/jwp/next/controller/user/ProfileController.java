@@ -1,4 +1,4 @@
-package com.bw.jwp.next.controller;
+package com.bw.jwp.next.controller.user;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -6,16 +6,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bw.jwp.next.controller.Controller;
 import com.bw.jwp.next.model.User;
 import com.bw.jwp.next.service.UserService;
 import com.bw.jwp.next.service.UserServiceImpl;
-import com.bw.jwp.next.util.UserSessionUtils;
 
-/**
- * @author Byungwook, Lee
- */
-public class UpdateFormController implements Controller {
-	private static final Logger LOG = LoggerFactory.getLogger(UpdateFormController.class);
+public class ProfileController implements Controller {
+	private static final Logger LOG = LoggerFactory.getLogger(ProfileController.class);
 
 	private UserService userService = new UserServiceImpl();
 
@@ -23,16 +20,16 @@ public class UpdateFormController implements Controller {
 	public String execute(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
 		final String userId = req.getParameter("userId");
 
-		LOG.debug("Get user update page: {}", userId);
+		LOG.debug("Get Profile page : {}", userId);
 
 		final User user = userService.getUser(userId);
 
-		if (!UserSessionUtils.isUserInSession(req.getSession(), user)) {
-			throw new IllegalStateException("다른 사용자의 정보를 수정할 수 없습니다.");
+		if (user == null) {
+			throw new NullPointerException("사용자를 찾을 수 없습니다.");
 		}
 
 		req.setAttribute("user", user);
 
-		return "/user/updateForm.jsp";
+		return "/user/profile.jsp";
 	}
 }
